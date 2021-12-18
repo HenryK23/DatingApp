@@ -1,1 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
+.tab-panel {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+    
+  }
+
+  .member-tabset > .tab-content {
+    margin-top: -3px;
+    border: 0;
+    border-top: 1px solid #eee;
+    padding: 15px 0;
+    
+  }
+
+  .nav-item.active [aria-selected="true"]  {    
+      color: rgba(0, 0, 0, 0.747);
+      background-color: rgba(255, 208, 0, 0.918);
+      text-transform: uppercase;
+      font-weight: bold;
+  }
+
