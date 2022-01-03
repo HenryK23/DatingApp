@@ -18,6 +18,7 @@ namespace API.Extentions
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<ILikesRespository, LikesRespository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<LogUserActivity>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
