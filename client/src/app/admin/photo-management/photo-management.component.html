@@ -1,1 +1,14 @@
-<p>photo-management works!</p>
+
+<div 
+    #scrollMe
+    style="overflow: scroll; height: 700px"
+    class="body"
+    >
+    <div class="card" *ngFor="let photo of unmoderatedPhotos">
+        <div class="card-body">
+            <img src="{{photo.url}}" alt="" class="mr-3">
+            <button class="btn btn-outline-warning mr-3" (click)="approvePhoto(photo.appUserId, photo.id)">Approve</button>
+            <button class="btn btn-danger" (click)="disapprovePhoto(photo.appUserId, photo.id)">Disapprove</button>
+        </div>
+    </div>
+</div>

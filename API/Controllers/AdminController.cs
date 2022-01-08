@@ -1,4 +1,5 @@
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,13 @@ namespace API.Controllers
     public class AdminController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        public AdminController(UserManager<AppUser> userManager)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPhotoService _photoService;
+    
+        public AdminController(UserManager<AppUser> userManager, IUnitOfWork unitOfWork, IPhotoService photoService)
         {
+            _photoService = photoService;
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
 
@@ -33,10 +39,64 @@ namespace API.Controllers
 
         [Authorize(Policy = "ModeratePhotoRole")]
         [HttpGet("photos-to-moderate")]
-        public ActionResult GetPhotosForModeration(){
+        public async Task<ActionResult> GetPhotosForModeration(){
 
-            return Ok("Admins or Moderators can see this");
+            var unmoderatedPhotos = await _userManager.Users
+                .Where(User => User.Photos.FirstOrDefault() != null)
+                .IgnoreQueryFilters()
+                .Select(p => new {
+                    Username = p.UserName,
+                    unmoderatedPhotos = p.Photos.Where(x => x.IsAvailable == false).ToList(),
+                })
+                .ToListAsync();
+            
+            
+            return Ok(unmoderatedPhotos);
         }
+
+
+         [HttpDelete("disapprove-photo/{userId}")]
+         public async Task<ActionResult> DisapprovePhoto(int userId, [FromQuery] int photoId){
+
+             var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+
+             if(user == null) return NotFound("Could not find this user");
+
+             var photoToDelete = user.Photos.FirstOrDefault(x => x.Id == photoId);
+
+             if(photoToDelete == null) return NotFound("Could not find photo to delete");
+
+             if (photoToDelete.PublicId != null){
+                var result = await _photoService.DeletePhotoAsync(photoToDelete.PublicId);
+                if(result.Error != null) return BadRequest(result.Error.Message);
+            }
+
+             user.Photos.Remove(photoToDelete);
+
+             if(await _unitOfWork.Complete()) return Ok();
+
+             return BadRequest("Failed to delete photo");
+         }
+
+         [HttpPut("approve-photo/{userId}")]
+         public async Task<ActionResult> ApprovePhoto(int userId, [FromQuery] int photoId){
+
+             var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+
+             if(user == null) return NotFound("Could not find this user");
+
+             var photoToApprove = user.Photos.FirstOrDefault(x => x.Id == photoId);
+
+             if(photoToApprove == null) return NotFound("Could not find photo to approve");
+
+             photoToApprove.IsAvailable = true;
+
+             if(user.Photos.Where(x => x.IsMain == true).Count() == 0) photoToApprove.IsMain = true;
+            
+             if(await _unitOfWork.Complete()) return Ok();
+
+             return BadRequest("Failed to approve photo");
+         }
 
 
         [HttpPost("edit-roles/{username}")]

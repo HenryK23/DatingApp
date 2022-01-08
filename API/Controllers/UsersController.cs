@@ -35,13 +35,10 @@ namespace API.Controllers
 
             var gender = await _unitOfWork.UserRepository.GetUserGender(userParams.CurrentUsername);
 
-            
-
             if(string.IsNullOrEmpty(userParams.Gender)){
                 userParams.Gender = gender == "male" ? "female" : "male";
             }
               
-
             var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
@@ -81,15 +78,10 @@ namespace API.Controllers
                 PublicId = result.PublicId
             };
 
-            if(user.Photos.Count == 0){
-                photo.IsMain = true;
-            }
-
             user.Photos.Add(photo);
 
             if(await _unitOfWork.Complete()){
                 return CreatedAtRoute("GetUser", new {username=user.UserName}, _mapper.Map<PhotoDto>(photo));
-                
             }
 
             return BadRequest("Problem uploading photo");
@@ -110,9 +102,9 @@ namespace API.Controllers
             if(await _unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Failed to set main photo");
-
         }
 
+        
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId){
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());

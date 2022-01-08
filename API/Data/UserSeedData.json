@@ -14,7 +14,7 @@
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/62.jpg",
-          "IsMain": true
+          "IsMain": false
         }
       ]
     },
@@ -33,7 +33,7 @@
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/57.jpg",
-          "IsMain": true
+          "IsMain": false
         }
       ]
     },
@@ -52,7 +52,7 @@
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/87.jpg",
-          "IsMain": true
+          "IsMain": false
         }
       ]
     },
@@ -71,7 +71,7 @@
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/14.jpg",
-          "IsMain": true
+          "IsMain": false
         }
       ]
     },
@@ -90,7 +90,7 @@
       "Photos": [
         {
           "Url": "https://randomuser.me/api/portraits/women/48.jpg",
-          "IsMain": true
+          "IsMain": false
         }
       ]
     },
@@ -109,7 +109,7 @@
           "Photos": [
             {
               "Url": "https://randomuser.me/api/portraits/men/61.jpg",
-              "IsMain": true
+              "IsMain": false
             }
           ]
         },
@@ -128,7 +128,7 @@
           "Photos": [
             {
               "Url": "https://randomuser.me/api/portraits/men/40.jpg",
-              "IsMain": true
+              "IsMain": false
             }
           ]
         },
@@ -147,7 +147,7 @@
           "Photos": [
             {
               "Url": "https://randomuser.me/api/portraits/men/10.jpg",
-              "IsMain": true
+              "IsMain": false
             }
           ]
         },
@@ -166,7 +166,7 @@
           "Photos": [
             {
               "Url": "https://randomuser.me/api/portraits/men/6.jpg",
-              "IsMain": true
+              "IsMain": false
             }
           ]
         },
@@ -185,7 +185,7 @@
           "Photos": [
             {
               "Url": "https://randomuser.me/api/portraits/men/47.jpg",
-              "IsMain": true
+              "IsMain": false
             }
           ]
         }
