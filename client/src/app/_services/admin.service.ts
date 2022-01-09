@@ -17,7 +17,6 @@ export class AdminService {
 
   updateUserRoles(username: string, roles: string[]){
     return this.http.post(this.baseUrl + "admin/edit-roles/" + username + "?roles=" + roles, {});
-
   }
 
   getUnmoderatedPhotos(){
@@ -25,12 +24,11 @@ export class AdminService {
   }
 
   approvePhoto(userId: string, photoId: string){
-    return this.http.put(this.baseUrl + "admin/approve-photo/"+userId+"?photoId="+photoId, {});
+    return this.http.put(this.baseUrl + "admin/approve-photo/"+userId+"?photoId="+photoId,{});
   }
 
   disapprovePhoto(userId: string, photoId: string){
-    console.log("disapproved user id: " + userId + " photoid: " + photoId);
-    return this.http.delete(this.baseUrl + "admin/disapprove-photo/"+userId+"?photoId="+photoId, {});
+    return this.http.delete(this.baseUrl + "admin/disapprove-photo/"+userId+"?photoId="+photoId,{});
     
   }
 }

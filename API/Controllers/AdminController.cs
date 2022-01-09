@@ -54,49 +54,50 @@ namespace API.Controllers
             return Ok(unmoderatedPhotos);
         }
 
+        [Authorize(Policy = "ModeratePhotoRole")]
+        [HttpDelete("disapprove-photo/{userId}")]
+        public async Task<ActionResult> DisapprovePhoto(int userId, [FromQuery] int photoId){
 
-         [HttpDelete("disapprove-photo/{userId}")]
-         public async Task<ActionResult> DisapprovePhoto(int userId, [FromQuery] int photoId){
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
 
-             var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            if(user == null) return NotFound("Could not find this user");
 
-             if(user == null) return NotFound("Could not find this user");
+            var photoToDelete = user.Photos.FirstOrDefault(x => x.Id == photoId);
 
-             var photoToDelete = user.Photos.FirstOrDefault(x => x.Id == photoId);
+            if(photoToDelete == null) return NotFound("Could not find photo to delete");
 
-             if(photoToDelete == null) return NotFound("Could not find photo to delete");
-
-             if (photoToDelete.PublicId != null){
+            if (photoToDelete.PublicId != null){
                 var result = await _photoService.DeletePhotoAsync(photoToDelete.PublicId);
                 if(result.Error != null) return BadRequest(result.Error.Message);
             }
 
-             user.Photos.Remove(photoToDelete);
+            user.Photos.Remove(photoToDelete);
 
-             if(await _unitOfWork.Complete()) return Ok();
+            if(await _unitOfWork.Complete()) return Ok();
 
-             return BadRequest("Failed to delete photo");
+            return BadRequest("Failed to delete photo");
          }
+        
+        [Authorize(Policy = "ModeratePhotoRole")]
+        [HttpPut("approve-photo/{userId}")]
+        public async Task<ActionResult> ApprovePhoto(int userId, [FromQuery] int photoId){
 
-         [HttpPut("approve-photo/{userId}")]
-         public async Task<ActionResult> ApprovePhoto(int userId, [FromQuery] int photoId){
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
 
-             var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            if(user == null) return NotFound("Could not find this user");
 
-             if(user == null) return NotFound("Could not find this user");
+            var photoToApprove = user.Photos.FirstOrDefault(x => x.Id == photoId);
 
-             var photoToApprove = user.Photos.FirstOrDefault(x => x.Id == photoId);
+            if(photoToApprove == null) return NotFound("Could not find photo to approve");
 
-             if(photoToApprove == null) return NotFound("Could not find photo to approve");
+            photoToApprove.IsAvailable = true;
 
-             photoToApprove.IsAvailable = true;
-
-             if(user.Photos.Where(x => x.IsMain == true).Count() == 0) photoToApprove.IsMain = true;
+            if(user.Photos.Where(x => x.IsMain == true).Count() == 0) photoToApprove.IsMain = true;
             
-             if(await _unitOfWork.Complete()) return Ok();
+            if(await _unitOfWork.Complete()) return Ok();
 
-             return BadRequest("Failed to approve photo");
-         }
+            return BadRequest("Failed to approve photo");
+        }
 
 
         [HttpPost("edit-roles/{username}")]

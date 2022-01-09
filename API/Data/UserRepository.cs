@@ -22,10 +22,19 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task<MemberDto> GetMemberByUsernameAsync(string username)
+        public async Task<MemberDto> GetMemberByUsernameAsync(string username, bool isCurrentUser)
         {
+            if(isCurrentUser){
+                return await _context.Users
+                    .Include(p => p.Photos)
+                    .IgnoreQueryFilters()
+                    .Where(x => x.UserName == username)
+                    .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                    .SingleOrDefaultAsync();
+            }
+
             return await _context.Users
-            .Include(p => p.Photos.Where(x => x.IsAvailable == true))
+            .Include(p => p.Photos)
             .Where(x => x.UserName == username)
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
@@ -38,7 +47,6 @@ namespace API.Data
     
             query = query.Where(u => u.UserName != userParams.CurrentUsername);
             query = query.Where(u => u.Gender == userParams.Gender);
-            query = query.Include(p => p.Photos.Where(x => x.IsAvailable == true));
 
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
             var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
@@ -67,6 +75,7 @@ namespace API.Data
 
         public async Task<AppUser> GetUserByUsernameAsync(string Username)
         {
+            
             return await _context.Users
             .Include(p => p.Photos)
             .SingleOrDefaultAsync(x => x.UserName == Username);
